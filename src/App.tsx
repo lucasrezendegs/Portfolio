@@ -5,7 +5,6 @@ import {
   Camera,
   Check,
   Clapperboard,
-  Download,
   ExternalLink,
   Github,
   Layers3,
@@ -78,7 +77,7 @@ export default function App() {
 
   useEffect(() => {
     const sections = ['inicio', 'servicos', 'projetos', 'sobre', 'contato'];
-    const observer = new IntersectionObserver(
+    const sectionObserver = new IntersectionObserver(
       (entries) => {
         const visible = entries
           .filter((entry) => entry.isIntersecting)
@@ -87,11 +86,45 @@ export default function App() {
       },
       { rootMargin: '-35% 0px -55% 0px', threshold: [0, 0.2, 0.5] },
     );
+
     sections.forEach((id) => {
       const element = document.getElementById(id);
-      if (element) observer.observe(element);
+      if (element) sectionObserver.observe(element);
     });
-    return () => observer.disconnect();
+
+    return () => sectionObserver.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const elements = document.querySelectorAll<HTMLElement>('.reveal');
+
+    // The previous stylesheet intentionally hides reveal elements until this
+    // observer marks them as visible. Without this observer the whole page
+    // appears empty in production, leaving only the fixed navigation visible.
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.08, rootMargin: '0px 0px -40px 0px' },
+    );
+
+    elements.forEach((element) => revealObserver.observe(element));
+
+    // Guarantee content visibility even in browsers/environments where
+    // IntersectionObserver is unavailable or delayed during hydration.
+    const fallback = window.setTimeout(() => {
+      elements.forEach((element) => element.classList.add('visible'));
+    }, 1200);
+
+    return () => {
+      window.clearTimeout(fallback);
+      revealObserver.disconnect();
+    };
   }, []);
 
   const closeMenu = () => setMenuOpen(false);
