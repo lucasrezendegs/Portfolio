@@ -317,6 +317,9 @@
         }
         
         .project-image {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -454,7 +457,7 @@
             .section-container { padding: 80px 40px; }
             .project-panel { flex-direction: column !important; }
             .project-visual, .project-info { width: 100%; }
-            .project-visual { border-right: none !important; border-bottom: 1px solid var(--border); min-height: 300px; }
+            .project-visual { border-right: none !important; border-bottom: 1px solid var(--border); min-height: 350px; aspect-ratio: 16/9; }
             .project-panel:nth-child(even) .project-visual { border-left: none; }
             .contact-wrapper { grid-template-columns: 1fr; }
         }
